@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rain (VA/PA) vs Card-Bridge vs DeCard — 能力对比</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --border: #e6e3dc;
+    --text: #1d1d1f;
+    --text-soft: #5c5c66;
+    --text-muted: #8a8a93;
+    --rain-va: #5b8def;
+    --rain-pa: #3b5bb5;
+    --bridge: #d97757;
+    --decard: #6b8e23;
+    --good: #2f8f4a;
+    --warn: #c87b16;
+    --bad: #c0392b;
+    --good-bg: #e8f5ec;
+    --warn-bg: #fcf3e0;
+    --bad-bg: #fdecea;
+    --h5-bg: #ede7f6;
+    --h5: #6a4ea3;
+    --highlight-bg: #fff8d6;
+    --pair-bg-va: #f5f9ff;
+    --pair-bg-pa: #f7faf2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  header {
+    border-bottom: 2px solid var(--text);
+    padding-bottom: 18px;
+    margin-bottom: 32px;
+  }
+  h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: -0.5px; }
+  .subtitle { color: var(--text-soft); font-size: 15px; }
+  .meta { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
+
+  h2 {
+    font-size: 22px;
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: -0.3px;
+  }
+  h2 .num { color: var(--text-muted); font-weight: 400; margin-right: 8px; }
+
+  /* === Pair intro === */
+  .pair-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 12px 0 22px;
+  }
+  .pair-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    border-left: 4px solid;
+  }
+  .pair-card.va { border-left-color: var(--rain-va); background: var(--pair-bg-va); }
+  .pair-card.pa { border-left-color: var(--rain-pa); background: var(--pair-bg-pa); }
+  .pair-card h3 { margin: 0 0 6px; font-size: 16px; }
+  .pair-card p { margin: 0; color: var(--text-soft); font-size: 13.5px; line-height: 1.65; }
+  .pair-card .vs { font-weight: 600; color: var(--text); }
+
+  /* === Persona cards === */
+  .personas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .persona {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 4px solid;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+  }
+  .persona.rain-va { border-top-color: var(--rain-va); }
+  .persona.rain-pa { border-top-color: var(--rain-pa); }
+  .persona.bridge { border-top-color: var(--bridge); }
+  .persona.decard { border-top-color: var(--decard); }
+  .persona h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .persona .tag {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .persona .pair-mark {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 8px;
+    background: #efece2;
+    color: var(--text-soft);
+    margin-bottom: 10px;
+  }
+  .persona .one-liner {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+  .persona .stars {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px 8px;
+    font-size: 12px;
+    align-items: center;
+    margin-top: auto;
+  }
+  .persona .stars .label { color: var(--text-soft); }
+  .persona .stars .score { font-family: "SF Mono", Menlo, monospace; }
+  .filled { color: #d4a017; }
+  .empty { color: #d8d3c4; }
+
+  /* === Capability matrix === */
+  .matrix-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 12px 0 8px;
+  }
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.matrix thead th {
+    background: #f3f1eb;
+    text-align: left;
+    padding: 12px 10px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  table.matrix thead tr.pair-row th { top: 0; }
+  table.matrix thead tr:nth-child(2) th { top: 33px; }
+  table.matrix thead th.center { text-align: center; }
+  table.matrix thead th.rain-va-c { color: var(--rain-va); background: var(--pair-bg-va); }
+  table.matrix thead th.decard-c { color: var(--decard); background: var(--pair-bg-va); }
+  table.matrix thead th.rain-pa-c { color: var(--rain-pa); background: var(--pair-bg-pa); }
+  table.matrix thead th.bridge-c { color: var(--bridge); background: var(--pair-bg-pa); }
+  table.matrix tbody td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  table.matrix tbody td.center { text-align: center; }
+  table.matrix tbody td.va-col { background: var(--pair-bg-va); }
+  table.matrix tbody td.pa-col { background: var(--pair-bg-pa); }
+  table.matrix tbody tr:hover td.feature { background: #f5f2e6; }
+  table.matrix tbody tr:hover td.va-col { background: #eaf1fc; }
+  table.matrix tbody tr:hover td.pa-col { background: #eef2e7; }
+  table.matrix tbody tr:last-child td { border-bottom: none; }
+  table.matrix tbody td.feature {
+    font-weight: 600;
+    background: #fbfaf5;
+    width: 22%;
+  }
+  table.matrix tbody td.feature small {
+    display: block;
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  table.matrix .group-header td {
+    background: #f0ede2;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.5px;
+    padding: 10px 14px;
+    text-transform: uppercase;
+  }
+  /* Sub-header explaining the two pairs */
+  table.matrix thead tr.pair-row th {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px 8px;
+    background: #efece2;
+    color: var(--text-soft);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  table.matrix thead tr.pair-row th.va-group { background: var(--pair-bg-va); color: var(--rain-va); }
+  table.matrix thead tr.pair-row th.pa-group { background: var(--pair-bg-pa); color: var(--rain-pa); }
+
+  /* === Status pills === */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .pill.yes { background: var(--good-bg); color: var(--good); }
+  .pill.no { background: var(--bad-bg); color: var(--bad); }
+  .pill.partial { background: var(--warn-bg); color: var(--warn); }
+  .pill.h5 { background: var(--h5-bg); color: var(--h5); }
+  .pill .ic {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    text-align: center;
+    font-weight: 700;
+    line-height: 14px;
+  }
+
+  /* === Legend === */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 14px 16px;
+    background: #f3f1eb;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+
+  /* === Highlight card === */
+  .callouts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin: 20px 0;
+  }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    border-left: 4px solid;
+  }
+  .callout.good-c { border-left-color: var(--good); }
+  .callout.bad-c { border-left-color: var(--bad); }
+  .callout.our-c { border-left-color: var(--bridge); }
+  .callout h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .callout ul { margin: 0; padding-left: 20px; }
+  .callout li { margin: 8px 0; font-size: 14px; line-height: 1.6; }
+  .callout li b { color: var(--text); }
+
+  .highlight { background: var(--highlight-bg); padding: 0 3px; border-radius: 2px; }
+
+  .vendor {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    vertical-align: middle;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+  .vendor.rain-va { background: #e8eefb; color: #2f55c2; }
+  .vendor.rain-pa { background: #e5e9f3; color: #2a3f80; }
+  .vendor.bridge  { background: #f7e6db; color: #a04e25; }
+  .vendor.decard  { background: #ecf0df; color: #506e15; }
+
+  /* === Scenarios === */
+  .scenarios {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 12px 0;
+  }
+  .scenarios .row {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .scenarios .row:last-child { border-bottom: none; }
+  .scenarios .question {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .scenarios .answer {
+    color: var(--text-soft);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 1100px) {
+    .personas { grid-template-columns: repeat(2, 1fr); }
+    .pair-intro { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 860px) {
+    .personas, .callouts { grid-template-columns: 1fr; }
+    .scenarios .row { grid-template-columns: 1fr; gap: 4px; }
+    table.matrix thead th, table.matrix tbody td { padding: 8px 6px; font-size: 12px; }
+    table.matrix tbody td.feature { width: auto; }
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    table.matrix { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Rain (VA / PA) vs Card-Bridge vs DeCard</h1>
+  <div class="subtitle">能力差异对比 — 把 Rain 拆成 VA / PA 两种模式，分别对位 DeCard 和 Card-Bridge</div>
+  <div class="meta">整理日期：2026-05-19</div>
+</header>
+
+<!-- ============ 四方画像 ============ -->
+<h2><span class="num">一、</span>四方画像</h2>
+
+<div class="personas">
+  <div class="persona rain-va">
+    <h3>Rain Managed</h3>
+    <div class="tag">业界 Consumer Program 标杆 · rain-managed</div>
+    <div class="one-liner">
+      API-first，用户分配智能合约账户， Rain代替客户管理卡组授权与清算，无PCI可查敏感信息
+    </div>
+    <div class="stars">
+      <span class="label">API 完整度</span><span class="score"><span class="filled">★★★★★</span></span>
+      <span class="label">安全设计</span><span class="score"><span class="filled">★★★★</span><span class="empty">★</span></span>
+      <span class="label">运营友好度</span><span class="score"><span class="filled">★★★★★</span></span>
+    </div>
+  </div>
+
+  <div class="persona decard">
+    <h3>DeCard</h3>
+    <div class="tag">DCS · Virtual Account Model (VA)</div>
+    <div class="one-liner">
+      API-first + H5，用户分配EOA地址， DCS代替客户管理卡组授权与清算，敏感信息要强PCI认证（H5引导 or API）
+    </div>
+    <div class="stars">
+      <span class="label">API 完整度</span><span class="score"><span class="filled">★★★</span><span class="empty">★★</span></span>
+      <span class="label">安全设计</span><span class="score"><span class="filled">★★★★★</span></span>
+      <span class="label">运营友好度</span><span class="score"><span class="filled">★★★</span><span class="empty">★★</span></span>
+    </div>
+  </div>
+
+  <div class="persona rain-pa">
+    <h3>Rain Partner Managed</h3>
+    <div class="tag">业界 Partner-Managed 标杆 · partner-managed</div>
+    <div class="one-liner">
+      API-first，Partner分配智能合约账户（商户自掌钱包），Partner 处理卡组授权与清算；无PCI可查敏感信息
+    </div>
+    <div class="stars">
+      <span class="label">API 完整度</span><span class="score"><span class="filled">★★★★★</span></span>
+       <span class="label">安全设计</span><span class="score"><span class="filled">★★★★</span><span class="empty">★</span></span>
+      <span class="label">运营友好度</span><span class="score"><span class="filled">★★★★★</span></span>
+    </div>
+  </div>
+
+  <div class="persona bridge">
+    <h3>Card-Bridge</h3>
+    <div class="tag">DCS · Partner Account Model (PA)</div>
+    <div class="one-liner">
+      API-first，无链上智能合约或者EOA，依靠Partner账户保证金，Partner 处理卡组授权与清算；强PCI认证，敏感信息要强PCI认证（H5引导 or API）
+    </div>
+    <div class="stars">
+      <span class="label">API 完整度</span><span class="score"><span class="filled">★★★★</span><span class="empty">★</span></span>
+      <span class="label">安全设计</span><span class="score"><span class="filled">★★★★★</span></span>
+      <span class="label">运营友好度</span><span class="score"><span class="filled">★★★</span><span class="empty">★★</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 能力矩阵 ============ -->
+<h2><span class="num">二、</span>能力矩阵</h2>
+
+
+<div class="matrix-wrap">
+<table class="matrix">
+  <thead>
+    <tr class="pair-row">
+      <th></th>
+      <th class="va-group" colspan="2">代管型对位（Managed pair）</th>
+      <th class="pa-group" colspan="2">合作伙伴型对位（Partner pair）</th>
+    </tr>
+    <tr>
+      <th>能力</th>
+      <th class="center rain-va-c">Rain Managed<br></th>
+      <th class="center decard-c">DeCard (VA)</th>
+      <th class="center rain-pa-c">Rain Partner Managed<br></th>
+      <th class="center bridge-c">Card-Bridge（PA）</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr class="group-header"><td colspan="5">接入与鉴权</td></tr>
+    <tr>
+      <td class="feature">自助入驻<small>商户自己在 Dashboard 拿 Key、配 Webhook</small></td>
+      <td class="center va-col"><span class="pill yes">✓ 后台自助</span></td>
+      <td class="center va-col"><span class="pill no">✗ 人工配置</span></td>
+      <td class="center pa-col"><span class="pill yes">✓ 后台自助</span></td>
+      <td class="center pa-col"><span class="pill no">✗ 人工配置</span></td>
+    </tr>
+    <tr>
+      <td class="feature">密钥平滑轮换<small>新旧 Key 期间同时有效，零停机</small></td>
+      <td class="center va-col"><span class="pill yes">双签机制</span></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">双签机制</span></td>
+      <td class="center pa-col"><span class="pill no">✗</span></td>
+    </tr>
+    <tr>
+      <td class="feature">接口签名<small>对推送内容做加密 / 签名校验</small></td>
+      <td class="center va-col"><span class="pill partial">HMAC 签名</span></td>
+      <td class="center va-col"><span class="pill partial">HMAC 加签</span></td>
+      <td class="center pa-col"><span class="pill partial">HMAC 签名</span></td>
+      <td class="center pa-col"><span class="pill partial">HMAC 加签</span></td>
+    </tr>
+    <tr>
+      <td class="feature">授权回调 加密 / 签名<small>商户收到授权请求，对交易数据本身做加密+签名</small></td>
+      <td class="center va-col"><span class="pill no">—</span></td>
+      <td class="center va-col"><span class="pill no">—</span></td>
+      <td class="center pa-col"><span class="pill partial">HMAC 签名</span></td>
+      <td class="center pa-col"><span class="pill yes">RSA 加密</span></td>
+    </tr>
+
+    <tr class="group-header"><td colspan="5">KYC</td></tr>
+    <tr>
+      <td class="feature">Sumsub 托管模式<small>用户被引导到 Sumsub 走流程</small></td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center va-col"><span class="pill h5">⇲ H5</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+    </tr>
+    <tr>
+      <td class="feature">复用商户已有 KYC<small>Sumsub Share Token / Persona Token</small></td>
+      <td class="center va-col"><span class="pill yes">✓ 可免活体</span></td>
+      <td class="center va-col"><span class="pill partial">✓ 需加活体</span></td>
+      <td class="center pa-col"><span class="pill yes">✓ 可免活体</span></td>
+      <td class="center pa-col"><span class="pill partial">✓ 需加活体</span></td>
+    </tr>
+    <tr>
+      <td class="feature">API 直传 KYC 信息<small>不走 Sumsub、不跳 H5</small></td>
+      <td class="center va-col"><span class="pill yes">✓ 可免活体</span></td>
+      <td class="center va-col"><span class="pill partial">✓ 需加活体</span></td>
+      <td class="center pa-col"><span class="pill yes">✓ 可免活体</span></td>
+      <td class="center pa-col"><span class="pill partial">✓ 需加活体</span></td>
+    </tr>
+
+    <tr class="group-header"><td colspan="5">卡操作</td></tr>
+    <tr>
+      <td class="feature">申请虚拟卡<small>同步返回 vs 异步多阶段</small></td>
+      <td class="center va-col"><span class="pill yes">同步即激活</span></td>
+      <td class="center va-col"><span class="pill partial">异步操作+回调</span></td>
+      <td class="center pa-col"><span class="pill yes">同步即激活</span></td>
+      <td class="center pa-col"><span class="pill partial">异步操作+回调</span></td>
+    </tr>
+    <tr>
+      <td class="feature">虚拟卡转实体卡<small>同一张卡换形态</small></td>
+      <td class="center va-col"><span class="pill no">✗ 只能新建</span></td>
+      <td class="center va-col"><span class="pill h5">⇲ 支持 H5引导<br>可保留同 PAN</span></td>
+      <td class="center pa-col"><span class="pill no">✗ 只能新建</span></td>
+      <td class="center pa-col"><span class="pill yes">支持<br>可保留同 PAN</span></td>
+    </tr>
+    <tr>
+      <td class="feature">换虚拟卡 → 虚拟卡<small>旧卡作废，新卡新 PAN</small></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+    </tr>
+    <tr>
+      <td class="feature">换实体卡 → 虚拟卡</td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">换发虚卡</span></td>
+    </tr>
+    <tr>
+      <td class="feature">激活实体卡</td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center va-col"><span class="pill h5">⇲ H5</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+    </tr>
+    <tr>
+      <td class="feature">冻结 / 解冻</td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+    </tr>
+    <tr>
+      <td class="feature">注销卡<small>永久不可逆</small></td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+    </tr>
+ 
+
+    <tr class="group-header"><td colspan="5">敏感信息 / 安全</td></tr>
+    <tr>
+      <td class="feature">查 PAN / CVV<small>能否在 PCI 资质之外读到卡密</small></td>
+      <td class="center va-col"><span class="pill yes">无 PCI 可调<br>(密钥协商)</span></td>
+      <td class="center va-col"><span class="pill h5">⇲ H5验证码查看</span></td>
+      <td class="center pa-col"><span class="pill yes">无 PCI 可调<br>(密钥协商)</span></td>
+      <td class="center pa-col"><span class="pill partial">有PCI 直接加密返回<br>非 PCI 走 H5验证码查看</span></td>
+    </tr>
+    <tr>
+      <td class="feature">设置 / 重置 PIN</td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center va-col"><span class="pill h5">⇲ H5验证码操作</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill partial">PCI 直接API<br>非 PCI 走 H5</span></td>
+    </tr>
+
+    <tr class="group-header"><td colspan="5">实体卡物流</td></tr>
+    <tr>
+      <td class="feature">查询物流状态</td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+    </tr>
+
+
+    <tr class="group-header"><td colspan="5">限额</td></tr>
+    <tr>
+      <td class="feature">设置限额（单笔/日/月/年）</td>
+      <td class="center va-col"><span class="pill yes">开卡时设</span></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">开卡时设</span></td>
+      <td class="center pa-col"><span class="pill partial">调整需人工</span></td>
+    </tr>
+
+    <tr class="group-header"><td colspan="5">抵押品 / 资金模型</td></tr>
+    <tr>
+      <td class="feature">抵押模型<small>谁持有底层资金</small></td>
+      <td class="center va-col"><span class="pill partial">用户级别的链上智能合约</span></td>
+      <td class="center va-col"><span class="pill partial">用户级别的EOA地址</span></td>
+      <td class="center pa-col"><span class="pill partial">Partner级别的链上智能合约</span></td>
+      <td class="center pa-col"><span class="pill partial">Partner提供账户保证金</span></td>
+    </tr>
+    <tr>
+      <td class="feature">智能合约<small>Collateral Proxy</small></td>
+      <td class="center va-col"><span class="pill yes">✓</span></td>
+      <td class="center va-col"><span class="pill no">✗</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill no">✗</span></td>
+    </tr>
+
+    <tr class="group-header"><td colspan="5">交易与账本</td></tr>
+    <tr>
+      <td class="feature">完整交易生命周期事件<small>请求 → 创建 → 更新 → 完成</small></td>
+      <td class="center va-col"><span class="pill partial">部分事件</span></td>
+      <td class="center va-col"><span class="pill partial">部分事件</span></td>
+      <td class="center pa-col"><span class="pill yes">✓ 完整</span></td>
+      <td class="center pa-col"><span class="pill partial">部分事件</span></td>
+    </tr>
+    <tr>
+      <td class="feature">主动拒绝交易能力<small>商户能否在授权环节拒交易</small></td>
+      <td class="center va-col"><span class="pill no">—</span></td>
+      <td class="center va-col"><span class="pill no">—</span></td>
+      <td class="center pa-col"><span class="pill yes">✓</span></td>
+      <td class="center pa-col"><span class="pill partial">✓</span></td>
+    </tr>
+    <tr>
+      <td class="feature">对账机制</td>
+      <td class="center va-col"><span class="pill yes">报表 API + 交易查询</span></td>
+      <td class="center va-col"><span class="pill partial">交易查询</span></td>
+      <td class="center pa-col"><span class="pill yes">报表 API + 交易查询</span></td>
+      <td class="center pa-col"><span class="pill partial">每日结算报告</span></td>
+    </tr>
+    <tr>
+      <td class="feature">授权过期自动释放通知</td>
+      <td class="center va-col"><span class="pill yes">自动释放 + Webhook</span></td>
+      <td class="center va-col"><span class="pill no">无通知，渠道无感知</span></td>
+      <td class="center pa-col"><span class="pill partial">Rain 无通知, 商户自管 ledger</span></td>
+      <td class="center pa-col"><span class="pill yes">事件Webhook通知 + 超时告警通知</span></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- ============ 关键洞察 ============ -->
+<h2><span class="num">三、</span>关键洞察</h2>
+
+<div class="callouts">
+  <div class="callout good-c">
+    <h3>Rain 三大值得学</h3>
+    <ul>
+      <li>
+        <b> 双签名 + 平滑轮换</b><br>
+        Primary + Secondary 同时签发, 实现<span class="highlight">零停机轮换</span>
+      </li>
+      <li>
+        <b>细节的运营能力更完善</b><br>
+      </li>
+      <li>
+        <b>无 PCI 资质也能查 PAN/CVV</b>
+      </li>
+    </ul>
+  </div>
+
+  <div class="callout bad-c">
+    <h3>我们的明显差距</h3>
+    <ul>
+      <li><b>KYC 免活体</b>：Rain 复用 Sumsub Share Token / API 直传都<span class="highlight">可免活体</span>，DCS 两条路都<span class="highlight">必须加活体</span>。</li>
+      <li><b>Webhook 密钥轮换</b>：Card-Bridge 和 DeCard 都缺平滑切换机制（双签）。</li>
+      <li><b>整体运营能力偏弱</b>：比如错误码的定义不够明确、没有原始限额的设置、对账数据的明细等</li>
+    </ul>
+  </div>
+
+  <div class="callout our-c">
+    <h3>我们的差异化优势</h3>
+    <ul>
+      <li><span class="vendor bridge">Card-Bridge</span><b>虚转实可保留同 PAN</b>，Rain 两种模式都不支持虚转实</li>
+      <li><span class="vendor bridge">Card-Bridge</span><b>Webhook 交易金额 RSA 加密 + 加签</b>，比 Rain 的 HMAC 签名更重的安全等级</li>
+      <li><span class="vendor decard">DeCard</span><b>提供实体卡物流通知最完整</b></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 场景导向 ============ -->
+<h2><span class="num">四、</span>场景导向 — 如果你最关心 ...</h2>
+
+<div class="scenarios">
+  <div class="row">
+    <div class="question">把卡密展示给用户，但我们没有 PCI 资质</div>
+    <div class="answer">
+      <span class="vendor rain-va">Rain Managed</span> / <span class="vendor rain-pa">Rain Partner Managed</span> 都是答案（密钥协商方案）。DCS 必须 合作方有 PCI 证书 才能API交互，或者只能H5页面的引导。
+    </div>
+  </div>
+  <div class="row">
+    <div class="question">用户想从虚拟卡升级到实体卡，且保留同一张卡号</div>
+    <div class="answer">
+      <span class="vendor bridge">Card-Bridge</span> 独有能力。Rain VA / PA 都只能新建一张卡
+    </div>
+  </div>
+  <div class="row">
+    <div class="question">实体卡用户的"卡到哪了"体验</div>
+    <div class="answer">
+      <span class="vendor decard">DeCard</span> 最好（WebSocket + Webhook 双通道实时推送）；
+      <span class="vendor bridge">Card-Bridge</span> 仅支持轮询查询（无推送）；
+      <span class="vendor rain-va">Rain Managed</span> / <span class="vendor rain-pa">Rain PA</span> 都不做物流。
+    </div>
+  </div>
+  <div class="row">
+    <div class="question">商户用户已经在 Sumsub 完成 KYC，不想再做一次</div>
+    <div class="answer">
+      四方都支持 Sumsub Share Token 复用；<span class="vendor rain-va">Rain Managed</span> / <span class="vendor rain-pa">Rain PA</span> 可<span class="highlight">免活体</span>，<span class="vendor bridge">Card-Bridge & DCS</span>（无论 Share Token 还是 API 直传）都必须加活体。
+    </div>
+  </div>
+  <div class="row">
+    <div class="question">想做长期、稳定的密钥滚动而不停服</div>
+    <div class="answer">
+      <span class="vendor rain-va">Rain Managed</span> / <span class="vendor rain-pa">Rain PA</span> 都支持双签轮换。Card-Bridge / DeCard 密钥轮换都需要短暂窗口或人工协调。
+    </div>
+  </div>
+  <div class="row">
+    <div class="question">想要"商户掌钱包、自己记账、自己决定授权"</div>
+    <div class="answer">
+      <span class="vendor rain-pa">Rain Partner Managed</span> 是 Rain 这套生态里唯一答案；本质上和 <span class="vendor bridge">Card-Bridge</span> 的工作模型对位
+    </div>
+  </div>
+  <div class="row">
+    <div class="question">想让 Rain/DCS 全包，商户接事件就行</div>
+    <div class="answer">
+      <span class="vendor rain-va">Rain Managed</span> 就是为此设计；和 <span class="vendor decard">DeCard</span> 的角色定位相同 —— 但 Rain Managed 提供更完整交易事件、能查 PAN/CVV，明显比 DeCard 完整。
+    </div>
+  </div>
+</div>
+
+
+</div>
+</body>
+</html>
